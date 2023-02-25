@@ -1,25 +1,44 @@
 const express = require('express');
 const app = express();
-const logger = require('./logger');
-const authorize = require('./authorize');
+let { people } = require('./data');
 
-// req => middleware => res
-app.use(logger, authorize);
+// static assets
+app.use(express.static('./methods-public'));
 
-app.get('/', (req, res) => {
-  res.send('home page');
+// parse form data
+app.use(express.urlencoded({ extended: false }));
+
+// parse json
+app.use(express.json());
+
+app.get('/api/people', (req, res) => {
+  res.status(200).json({ success: true, data: people });
 });
-app.get('/about', (req, res) => {
-  res.send('about page');
+
+app.post('/api/people', (req, res) => {
+  const { name } = req.body;
+  if (!name) {
+    res.status(400).json({
+      success: false,
+      msg: `provide a name`,
+    });
+  }
+  res.status(201).json({ success: true, person: name });
 });
-app.get('/api/products', (req, res) => {
-  res.send('products page');
-});
-app.get('/api/items', (req, res) => {
-  console.log(req.user);
-  res.send('items page');
+
+app.post('/login', (req, res) => {
+  const { name } = req.body;
+  if (!name == '') {
+    res.status(200).send(`welcome ${name}`);
+  } else {
+    res
+      .status(401)
+      .send(
+        'did not provide a valid name, <a href="/">please go back to login</a>'
+      );
+  }
 });
 
 app.listen(5000, () => {
-  console.log('listening on port: 5000');
+  console.log('app listening on port: 5000');
 });
