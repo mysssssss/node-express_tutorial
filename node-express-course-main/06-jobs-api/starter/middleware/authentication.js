@@ -2,7 +2,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { UnauthenticatedError } = require('../errors/index');
 
-const auth = async (req, res, nest) => {
+const auth = async (req, res, next) => {
   // check header
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -13,7 +13,13 @@ const auth = async (req, res, nest) => {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     //attach user to job routes
     req.user = {
-      userId: payload,
+      userId: payload.userId,
+      name: payload.name,
     };
-  } catch (err) {}
+    next();
+  } catch (err) {
+    throw new UnauthenticatedError('invalid authentication');
+  }
 };
+
+module.exports = auth;
