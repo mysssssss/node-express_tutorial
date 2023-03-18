@@ -16,7 +16,6 @@ const getJob = async (req, res) => {
   if (!job) {
     throw new NotFoundError(`no job with id ${id}`);
   }
-  // const job = await Job.findOne({ _id: req.params.id });
   res.status(StatusCodes.OK).json({ job, count: job.length });
 };
 
@@ -43,7 +42,6 @@ const updateJob = async (req, res) => {
   if (!job) {
     throw new NotFoundError(`no job with id ${id}`);
   }
-  // const job = await Job.findOne({ _id: req.params.id });
   res.status(StatusCodes.OK).json({ job, count: job.length });
 };
 
